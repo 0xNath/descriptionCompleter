@@ -1,4 +1,7 @@
 <?php
+
+use Glpi\Toolbox\Sanitizer;
+
 /**
  * Install hook
  *
@@ -27,14 +30,14 @@ function plugin_descriptionCompleter_uninstall()
 function replace_description_content(CommonDBTM $item)
 {
    $regexPatterns = [
-      ["pattern" => "/(\s|[rpmi]>)(t_0*(\d+))/i", "substitute" => '$1<a href="/front/ticket.form.php?id=$3" target="_blank" rel="noopener">$2</a>'],
-      ["pattern" => "/(\s|[rpmi]>)(ticket\s*0*(\d+))/i", "substitute" => '$1<a href="/front/ticket.form.php?id=$3" target="_blank" rel="noopener">$2</a>'],
-      ["pattern" => "/(\s|[rpmi]>)(REQ0*(\d+))/i", "substitute" => '$1<a href="/front/ticket.form.php?id=$3" target="_blank" rel="noopener">$2</a>'],
-      ["pattern" => "/(\s|[rpmi]>)(REC0*(\d+))/i", "substitute" => '$1<a href="/front/ticket.form.php?id=$3" target="_blank" rel="noopener">$2</a>'],
-      ["pattern" => "/(\s|[rpmi]>)(PO0*(\d+))/i", "substitute" => '$1<a href="/front/ticket.form.php?id=$3" target="_blank" rel="noopener">$2</a>'],
+      ["pattern" => "/(\s+|[a-z]>)(t_0*(\d+))/iu", "substitute" => '$1<a href="/front/ticket.form.php?id=$3" target="_blank" rel="noopener">$2</a>'],
+      ["pattern" => "/(\s+|[a-z]>)(ticket\s*0*(\d+))/iu", "substitute" => '$1<a href="/front/ticket.form.php?id=$3" target="_blank" rel="noopener">$2</a>'],
+      ["pattern" => "/(\s+|[a-z]>)(REQ0*(\d+))/iu", "substitute" => '$1<a href="/front/ticket.form.php?id=$3" target="_blank" rel="noopener">$2</a>'],
+      ["pattern" => "/(\s+|[a-z]>)(REC0*(\d+))/iu", "substitute" => '$1<a href="/front/ticket.form.php?id=$3" target="_blank" rel="noopener">$2</a>'],
+      ["pattern" => "/(\s+|[a-z]>)(PO0*(\d+))/iu", "substitute" => '$1<a href="/front/ticket.form.php?id=$3" target="_blank" rel="noopener">$2</a>'],
    ];
 
-   $decodedContent = html_entity_decode($item->input["content"]);
+   $decodedContent = Sanitizer::unsanitize($item->input["content"]);
 
    foreach ($regexPatterns as ["pattern" => $pattern, "substitute" => $substitute]) {
       $decodedContent = preg_replace(
@@ -44,9 +47,5 @@ function replace_description_content(CommonDBTM $item)
       );
    }
 
-   $item->input['content'] = htmlentities(
-      $decodedContent,
-      ENT_NOQUOTES,
-      'utf-8'
-   );
+   $item->input['content'] = Sanitizer::sanitize($decodedContent);
 }
