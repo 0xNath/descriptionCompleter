@@ -25,10 +25,15 @@ function plugin_descriptionCompleter_uninstall()
 /**
  * Function to replace object content
  *
- * @return void
+ * @return bool
  */
 function replace_description_content(CommonDBTM $item)
 {
+
+   if (!array_key_exists("content", $item->input)) {
+      return true;
+   }
+
    $regexPatterns = [
       ["pattern" => "/(\s+|[a-z]>)(t_0*(\d+))/iu", "substitute" => '$1<a href="/front/ticket.form.php?id=$3" target="_blank" rel="noopener">$2</a>'],
       ["pattern" => "/(\s+|[a-z]>)(ticket\s*0*(\d+))/iu", "substitute" => '$1<a href="/front/ticket.form.php?id=$3" target="_blank" rel="noopener">$2</a>'],
@@ -48,4 +53,6 @@ function replace_description_content(CommonDBTM $item)
    }
 
    $item->input['content'] = Sanitizer::sanitize($decodedContent);
+
+   return true;
 }

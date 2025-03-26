@@ -15,6 +15,7 @@ function plugin_init_descriptionCompleter()
     $PLUGIN_HOOKS[Hooks::CSRF_COMPLIANT]['descriptionCompleter'] = true;
     $PLUGIN_HOOKS[Hooks::PRE_ITEM_ADD]['descriptionCompleter'] = [
         Ticket::class => 'replace_description_content',
+        TicketTask::class => 'replace_description_content',
         ITILFollowup::class => 'replace_description_content',
         ITILSolution::class => 'replace_description_content',
         ITILValidation::class => 'replace_description_content',
